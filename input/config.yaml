@@ -1,0 +1,37 @@
+streamlit:
+  settings:
+    page_title: Dashboard
+    layout: wide
+    initial_sidebar_state: expanded
+    title: Reporting
+    success_message: Process done
+  widgets:
+    start_button:
+      name: Start
+      event: --start--
+    reset_button:
+      name: Reset
+    select_names:
+      name: Ids
+    toggle_data:
+      name: Show data
+    toggle_other_data:
+      name: Show other data
+  captions:
+    data: Raw data
+    other_data: Other data
+    results: Results
+
+column_infos:
+  name:
+    col_name: Name
+    input: id
+  raw_value:
+    col_name: Raw Value
+    input: value
+  value:
+    col_name: Value
+    input: value
+  factor:
+    col_name: Factor
+    input: factor
