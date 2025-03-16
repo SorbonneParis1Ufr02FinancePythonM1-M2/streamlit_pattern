@@ -38,6 +38,7 @@ class App:
         logger.debug(f"names={names}")
         toggle_data = self.view.show_toggle_data()
         toggle_other_data = self.view.show_toggle_other_data()
+        export = self.view.show_export_button()
 
         if start_button:
             logger.debug("Start button")
@@ -51,12 +52,19 @@ class App:
             self.repo.load_data(names)
             self.repo.load_other_data(names)
             self.model.process()
+            columns_results = self.view.show_multiselect_columns()
+            items_filtered = self.view.show_selected_items()
+            filter = self.view.show_slider_results()
             if toggle_data:
                 self.view.show_data()
             if toggle_other_data:
                 self.view.show_other_data()
-            self.view.show_results()
+            self.view.show_results(columns_results, items_filtered, filter)
             self.view.show_success_message()
+
+            if export:
+                logger.info("Run export")
+                self.view.export_to_excel()
 
 
 if __name__ == "__main__":

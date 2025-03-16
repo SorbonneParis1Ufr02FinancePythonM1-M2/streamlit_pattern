@@ -7,16 +7,25 @@ streamlit:
     success_message: Process done
   widgets:
     start_button:
-      name: Start
+      label: Start
       event: --start--
     reset_button:
-      name: Reset
+      label: Reset
+    export_button:
+      label: Export
     select_names:
-      name: Ids
+      label: Select Ids
     toggle_data:
-      name: Show data
+      label: Show data
     toggle_other_data:
-      name: Show other data
+      label: Show other data
+    multiselect_columns:
+      label: Please select columns
+    pills_items:
+      label: Please select ids
+    slider_values:
+      label: Please select values
+      step: 20
   captions:
     data: Raw data
     other_data: Other data
@@ -32,6 +41,45 @@ column_infos:
   value:
     col_name: Value
     input: value
+  item:
+    col_name: Item
+    input: item
   factor:
     col_name: Factor
     input: factor
+
+insertions:
+  excel_paths:
+    main: input/target_file_v01.xlsx
+    second: input/second_file_v01.xlsx
+  mapping:
+    data:
+      module: repo
+      property: None
+      method: get_data_as_dataframe
+      tag: <data>
+      excels:
+        main:
+          sheet: Data
+          address: A2
+    other_data:
+      module: repo
+      property: None
+      method: get_other_data_as_dataframe
+      tag: <other_data>
+      excels:
+        main:
+          sheet: Data
+          address: A20
+    results:
+      module: model
+      property: None
+      method: get_data_as_dataframe
+      tag: <results>
+      excels:
+        main:
+          sheet: Results
+          address: B3
+        second:
+          sheet: Results
+          address: B4

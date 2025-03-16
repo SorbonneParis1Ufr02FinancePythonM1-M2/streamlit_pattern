@@ -19,6 +19,7 @@ class ColumnDefinition:
 class Data:
     name: str
     value: float
+    item: str
 
 
 @dataclass(init=True)
@@ -55,15 +56,16 @@ class Repository:
     def load_data(self, values):
         """Loads the dataset using column names from the config."""
         api_data = [
-            {"id": "a", "value": 1},
-            {"id": "b", "value": 2},
-            {"id": "c", "value": 3},
+            {"id": "a", "value": 1, "item": "stuff 1"},
+            {"id": "b", "value": 2, "item": "stuff 2"},
+            {"id": "c", "value": 3, "item": "stuff 1"},
         ]
         for value in api_data:
             if value[self.column_infos["name"].input] in values:
                 d = Data(
                     name=value[self.column_infos["name"].input],
                     value=value[self.column_infos["raw_value"].input],
+                    item=value[self.column_infos["item"].input],
                 )
                 self.data[d.name] = d
         logger.info(f"len data={len(self.data)}")
@@ -89,10 +91,11 @@ class Repository:
         headers = (
             self.column_infos["name"].col_name,
             self.column_infos["value"].col_name,
+            self.column_infos["item"].col_name,
         )
         data = list()
         for v in self.data.values():
-            data.append([v.name, v.value])
+            data.append([v.name, v.value, v.item])
         return pd.DataFrame(data=data, columns=headers)
 
     def get_other_data_as_dataframe(self):
