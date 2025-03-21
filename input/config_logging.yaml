@@ -11,7 +11,7 @@ formatters:
 handlers:
     console:
         class: logging.StreamHandler
-        level: WARNING
+        level: DEBUG
         formatter: console_format
         stream: ext://sys.stdout
     file:
@@ -19,7 +19,7 @@ handlers:
         level: DEBUG
         formatter: file_format
         filename: C:\python_log\template.log
-        mode: w
+        mode: a
 
 loggers:
     dev:
@@ -27,7 +27,7 @@ loggers:
         handlers: [console, file]
         propagate: no
     prod:
-        level: WARNING
+        level: DEBUG
         handlers: [file]
         propagate: no
 

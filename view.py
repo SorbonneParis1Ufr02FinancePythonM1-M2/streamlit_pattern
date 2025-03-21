@@ -1,4 +1,5 @@
 import logging
+
 import pandas as pd
 import streamlit as st
 from openpyxl import load_workbook
@@ -9,14 +10,12 @@ logger = logging.getLogger(LOGGER_NAME)
 
 
 class View:
-    def __init__(self, repo, model):
-        self.repo = repo
-        self.model = model
-        self.config = repo.config
+    def __init__(self, config):
         # streamlit parameters
-        self.streamlit_settings = self.repo.config["streamlit"]["settings"]
-        self.streamlit_widgets_config = self.repo.config["streamlit"]["widgets"]
-        self.streamlit_captions = self.repo.config["streamlit"]["captions"]
+        self.config = config
+        self.streamlit_settings = self.config["streamlit"]["settings"]
+        self.streamlit_widgets_config = self.config["streamlit"]["widgets"]
+        self.streamlit_captions = self.config["streamlit"]["captions"]
         self.streamlit_widgets = dict()
 
         st.set_page_config(
@@ -24,6 +23,19 @@ class View:
             layout=self.streamlit_settings["layout"],
             initial_sidebar_state=self.streamlit_settings["initial_sidebar_state"],
         )
+
+        self.repo = None
+        self.model = None
+        self.config = None
+
+    def set_config(self, config):
+        self.config = config
+
+    def set_repository(self, repo):
+        self.repo = repo
+
+    def set_model(self, model):
+        self.model = model
 
     def show_title(self):
         st.title(self.streamlit_settings["title"])
@@ -58,7 +70,7 @@ class View:
         )
 
     def show_multiselect_columns(self):
-        columns = self.model.get_data_as_dataframe().columns
+        columns = self.model.get_data_as_dataframe().columns.tolist()
         return st.sidebar.multiselect(self.streamlit_widgets_config["multiselect_columns"]["label"], options=columns,
                                       default=columns)
 
@@ -69,12 +81,12 @@ class View:
         step = self.streamlit_widgets_config["slider_values"]['step']
         caption = self.streamlit_widgets_config["slider_values"]['label']
         return st.sidebar.slider(caption, min_value=min_value, max_value=max_value,
-                                  value=max_value, step=step)
+                                 value=max_value, step=step)
 
     def show_selected_items(self):
         values = self.model.get_data_as_dataframe()[self.repo.column_infos["item"].col_name].unique().tolist()
-        return st.sidebar.pills(self.streamlit_widgets_config["pills_items"]["label"], values, selection_mode="multi",
-                                default=values)
+        return st.sidebar.multiselect(self.streamlit_widgets_config["pills_items"]["label"], options=values,
+                                      default=values)
 
     def show_data(self):
         st.write(self.streamlit_captions["data"])
@@ -86,7 +98,6 @@ class View:
 
     def show_results(self, columns, items, limit):
         df = self.model.get_data_as_dataframe()
-        logger.warning(df[self.repo.column_infos["name"].col_name].isin(items))
         df = df.loc[df[self.repo.column_infos["item"].col_name].isin(items)]
         df = df.loc[df[self.repo.column_infos["value"].col_name] <= limit, columns]
         logger.debug(f"Results | subset columns={columns}")

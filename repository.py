@@ -1,6 +1,7 @@
+import logging
+import streamlit as st
 from dataclasses import dataclass
 
-import logging
 import pandas as pd
 
 from constants import LOGGER_NAME
@@ -26,6 +27,28 @@ class Data:
 class OtherData:
     name: str
     factor: float
+
+
+@st.cache_data
+def _get_data(values, column_infos):
+    """Loads the dataset using column names from the config."""
+    logger.warning("get data uncached")
+    results = dict()
+    api_data = [
+        {"id": "a", "value": 1, "item": "stuff 1"},
+        {"id": "b", "value": 2, "item": "stuff 2"},
+        {"id": "c", "value": 3, "item": "stuff 1"},
+    ]
+    for value in api_data:
+        if value[column_infos["name"].input] in values:
+            d = Data(
+                name=value[column_infos["name"].input],
+                value=value[column_infos["raw_value"].input],
+                item=value[column_infos["item"].input],
+            )
+            results[d.name] = d
+    logger.info(f"len data={len(results)}")
+    return results
 
 
 class Repository:
@@ -55,19 +78,8 @@ class Repository:
 
     def load_data(self, values):
         """Loads the dataset using column names from the config."""
-        api_data = [
-            {"id": "a", "value": 1, "item": "stuff 1"},
-            {"id": "b", "value": 2, "item": "stuff 2"},
-            {"id": "c", "value": 3, "item": "stuff 1"},
-        ]
-        for value in api_data:
-            if value[self.column_infos["name"].input] in values:
-                d = Data(
-                    name=value[self.column_infos["name"].input],
-                    value=value[self.column_infos["raw_value"].input],
-                    item=value[self.column_infos["item"].input],
-                )
-                self.data[d.name] = d
+        logger.warning("Getting data")
+        self.data = _get_data(values, column_infos=self.column_infos)
         logger.info(f"len data={len(self.data)}")
 
     def load_other_data(self, values):

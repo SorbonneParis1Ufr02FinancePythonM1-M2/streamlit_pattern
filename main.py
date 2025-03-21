@@ -23,9 +23,13 @@ class App:
             os.path.normpath(os.getcwd()), CONFIG_FOLDER, CONFIG_FILE_NAME
         )
         self.config = get_serialized_data(config_file_path)
+
+        self.view = View(self.config)
         self.repo = Repository(self.config)
         self.model = Model(self.repo)
-        self.view = View(self.repo, self.model)
+
+        self.view.set_repository(self.repo)
+        self.view.set_model(self.model)
 
     def run(self):
         logger.info("Run App")
